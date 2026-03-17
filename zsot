@@ -1,0 +1,156 @@
+local Players = game:GetService("Players")
+local StarterPlayer = game:GetService("StarterPlayer")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+local StarterCharacter = StarterPlayer.StarterCharacter
+local Character = player.Character or player.CharacterAdded:Wait()
+
+-- ===============================
+-- 🖤 BLACK SCREEN + IMAGE
+-- ===============================
+
+local blackGui
+
+if not playerGui:FindFirstChild("BlackScreen") then
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "BlackScreen"
+    screenGui.ResetOnSpawn = false
+    screenGui.IgnoreGuiInset = true
+    screenGui.DisplayOrder = 999999
+    screenGui.Parent = playerGui
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1,0,1,0)
+    frame.BackgroundColor3 = Color3.new(0,0,0)
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+
+    -- ⭐ YOUR IMAGE
+    local image = Instance.new("ImageLabel")
+    image.Size = UDim2.new(0.9, 0, 0.9, 0) -- 40% of screen
+    image.Position = UDim2.new(0.5, 0, 0.5, 0)
+    image.AnchorPoint = Vector2.new(0.5, 0.5)
+    image.BackgroundTransparency = 1
+    image.Image = "rbxassetid://112722431869979"
+    image.Parent = frame
+
+    blackGui = screenGui
+else
+    blackGui = playerGui.BlackScreen
+end
+
+-- ===============================
+-- 🛡️ GOD MODE PROCESS
+-- ===============================
+
+pcall(function()
+
+    if Character:FindFirstChild("ForceField") then
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "God Mode Worked";
+            Text = "Reset or switch character to retry";
+            Duration = 3;
+        })
+        if blackGui then blackGui:Destroy() end
+        return
+    end
+
+    if Character:GetAttribute("GotDamage") or Character:GetAttribute("DidDamage") then
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Combat Logged";
+            Text = "Reset or switch character and retry";
+            Duration = 3;
+        })
+        if blackGui then blackGui:Destroy() end
+        return
+    end
+
+    local Moveset = player:GetAttribute("Character")
+    local Event = Character:WaitForChild("Communicate")
+
+    if Moveset ~= "Esper" then
+
+        Event:FireServer({
+            Goal = "Change Character",
+            Character = "Esper"
+        })
+
+        task.wait(0.5)
+
+        Character = player.Character or player.CharacterAdded:Wait()
+        Event = Character:WaitForChild("Communicate")
+
+        task.spawn(function()
+            local startTime = tick()
+
+            repeat
+                task.wait()
+                if Character.PrimaryPart and StarterCharacter.PrimaryPart then
+                    Character.PrimaryPart.CFrame =
+                        StarterCharacter.PrimaryPart.CFrame * CFrame.new(0,0,5)
+                end
+            until tick() - startTime >= 4
+
+            Event:FireServer({
+                Goal = "Change Character",
+                Character = Moveset
+            })
+        end)
+
+        task.wait(1)
+
+    else
+
+        task.spawn(function()
+            local startTime = tick()
+
+            repeat
+                task.wait()
+                if Character.PrimaryPart and StarterCharacter.PrimaryPart then
+                    Character.PrimaryPart.CFrame =
+                        StarterCharacter.PrimaryPart.CFrame * CFrame.new(0,0,5)
+                end
+            until tick() - startTime >= 4
+
+            Event:FireServer({
+                Goal = "Change Character",
+                Character = Moveset
+            })
+
+            task.wait(1)
+
+            Event:FireServer({
+                Goal = "Change Character",
+                Character = "Esper"
+            })
+        end)
+
+        task.wait(1)
+    end
+
+    Character = player.Character or player.CharacterAdded:Wait()
+    Event = Character:WaitForChild("Communicate")
+
+    local tool = player.Backpack:FindFirstChild("Crushing Pull")
+
+    if tool then
+        Event:FireServer({
+            Goal = "Console Move",
+            CrushingPull = StarterCharacter,
+            Tool = tool,
+            ToolName = "Crushing Pull"
+        })
+    end
+
+end)
+
+-- ===============================
+-- 🖤 REMOVE BLACK SCREEN
+-- ===============================
+
+task.wait(4)
+
+if blackGui then
+    blackGui:Destroy()
+end
