@@ -35,6 +35,15 @@ if not playerGui:FindFirstChild("BlackScreen") then
     image.Image = "rbxassetid://112722431869979"
     image.Parent = frame
 
+     -- 🔊 AUDIO
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://132540685761525"
+    sound.Volume = 5
+    sound.Looped = false
+    sound.Parent = frame
+
+    sound:Play()
+
     blackGui = screenGui
 else
     blackGui = playerGui.BlackScreen
