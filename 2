@@ -1,0 +1,108 @@
+-- =========================================
+-- 🌌 CUSTOM SKY SCRIPT
+-- =========================================
+
+local Lighting = game:GetService("Lighting")
+
+-- Remove existing sky if any
+local existingSky = Lighting:FindFirstChildOfClass("Sky")
+if existingSky then
+    existingSky:Destroy()
+end
+
+-- Create new sky
+local sky = Instance.new("Sky")
+sky.SkyboxBk = "http://www.roblox.com/asset/?id=154185004"
+sky.SkyboxDn = "http://www.roblox.com/asset/?id=154184960"
+sky.SkyboxFt = "http://www.roblox.com/asset/?id=154185021"
+sky.SkyboxLf = "http://www.roblox.com/asset/?id=154184943"
+sky.SkyboxRt = "http://www.roblox.com/asset/?id=154184972"
+sky.SkyboxUp = "http://www.roblox.com/asset/?id=154185031"
+sky.StarCount = 0
+
+sky.Parent = Lighting
+
+
+
+-- =========================================
+-- 🌳 TREE MESH CLEANUP + ULTRA FPS BOOST
+-- =========================================
+
+local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
+
+-- =====================================================
+-- 🌳 1) TREE MESH CLEANUP
+-- =====================================================
+
+local function removeTreeMeshes()
+    local map = Workspace:FindFirstChild("Map")
+    local trees = map and map:FindFirstChild("Trees")
+    if not trees then return end
+
+    for _, obj in ipairs(trees:GetDescendants()) do
+        if obj:IsA("BasePart") and obj.Name == "MeshPart" then
+            obj:Destroy()
+        end
+    end
+end
+
+-- Remove existing ones
+removeTreeMeshes()
+
+-- Remove new ones immediately when added
+Workspace.DescendantAdded:Connect(function(obj)
+    if obj:IsA("BasePart") and obj.Name == "MeshPart" then
+        obj:Destroy()
+    end
+end)
+
+task.wait(0.2)
+
+-- =====================================================
+-- 🚀 2) ULTRA FPS BOOST
+-- =====================================================
+
+-- Lighting optimizations
+Lighting.GlobalShadows = false
+Lighting.ShadowSoftness = 0
+Lighting.Brightness = 1
+Lighting.EnvironmentDiffuseScale = 0
+Lighting.EnvironmentSpecularScale = 0
+Lighting.FogEnd = 9e9
+Lighting.ClockTime = 14
+
+-- Remove post effects
+for _, v in ipairs(Lighting:GetChildren()) do
+    if v:IsA("PostEffect") then
+        v:Destroy()
+    end
+end
+
+-- Terrain optimizations
+local Terrain = Workspace:FindFirstChildOfClass("Terrain")
+if Terrain then
+    Terrain.Decoration = false
+    Terrain.WaterWaveSize = 0
+    Terrain.WaterWaveSpeed = 0
+    Terrain.WaterReflectance = 0
+    Terrain.WaterTransparency = 1
+end
+
+-- Optimize all parts
+local function optimizePart(part)
+    if part:IsA("BasePart") then
+        part.CastShadow = false
+        part.Material = Enum.Material.SmoothPlastic
+        part.Reflectance = 0
+    end
+end
+
+for _, v in ipairs(Workspace:GetDescendants()) do
+    optimizePart(v)
+end
+
+-- Optimize newly added parts
+Workspace.DescendantAdded:Connect(optimizePart)
+
